@@ -6,7 +6,7 @@ class AddPetModal extends StatefulWidget {
   final int userId;
   final Function addPet;
 
-  AddPetModal(this.userId, this.addPet);
+  const AddPetModal(this.userId, this.addPet, {super.key});
 
   @override
   _AddPetModalState createState() => _AddPetModalState();
@@ -69,21 +69,21 @@ class _AddPetModalState extends State<AddPetModal> {
     return Card(
       elevation: 5,
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               TextField(
-                decoration: InputDecoration(labelText: 'Nome'),
+                decoration: const InputDecoration(labelText: 'Nome'),
                 controller: _nameController,
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Data de Nascimento'),
+                decoration: const InputDecoration(labelText: 'Data de Nascimento'),
                 controller: _birthDateController,
               ),
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Sexo'),
+                decoration: const InputDecoration(labelText: 'Sexo'),
                 value: _selectedSex,
                 items: ['Macho', 'Fêmea'].map((sexo) {
                   return DropdownMenuItem(
@@ -98,12 +98,12 @@ class _AddPetModalState extends State<AddPetModal> {
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Peso'),
+                decoration: const InputDecoration(labelText: 'Peso'),
                 controller: _weightController,
                 keyboardType: TextInputType.number,
               ),
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Porte'),
+                decoration: const InputDecoration(labelText: 'Porte'),
                 value: _selectedSize,
                 items: ['Pequeno', 'Médio', 'Grande'].map((porte) {
                   return DropdownMenuItem(
@@ -118,27 +118,27 @@ class _AddPetModalState extends State<AddPetModal> {
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Altura'),
+                decoration: const InputDecoration(labelText: 'Altura'),
                 controller: _heightController,
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: <Widget>[
                   Expanded(
                     child: _pickedImage != null
                         ? Image.file(_pickedImage!, fit: BoxFit.cover)
-                        : Text('Nenhuma imagem selecionada'),
+                        : const Text('Nenhuma imagem selecionada'),
                   ),
                   IconButton(
-                    icon: Icon(Icons.camera_alt),
+                    icon: const Icon(Icons.camera_alt),
                     onPressed: _pickImage,
                   ),
                 ],
               ),
               ElevatedButton(
-                child: Text('Adicionar Pet'),
                 onPressed: _submitData,
+                child: const Text('Adicionar Pet'),
               ),
             ],
           ),

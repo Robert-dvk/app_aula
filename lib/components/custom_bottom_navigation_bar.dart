@@ -4,9 +4,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  CustomBottomNavigationBar({
+  const CustomBottomNavigationBar({
     required this.currentIndex,
     required this.onTap,
+    super.key,
   });
 
   @override
@@ -14,7 +15,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
-      items: [
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_today),
           label: 'Agenda',
@@ -25,7 +26,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: 'Usuário',
+          label: 'Usuários',
         ),
       ],
     );

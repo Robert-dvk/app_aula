@@ -10,6 +10,8 @@ import 'package:app_aula/models/pet.dart';
 import 'package:app_aula/screens/add_agenda_modal.dart';
 
 class AgendaScreen extends StatefulWidget {
+  const AgendaScreen({super.key});
+
   @override
   _AgendaScreenState createState() => _AgendaScreenState();
 }
@@ -32,34 +34,26 @@ class _AgendaScreenState extends State<AgendaScreen> {
   Future<void> _loadAgendas() async {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      if (userId != null) {
-        List<Agenda> agendas = await AgendaRepository().readAgendasByUser(userId);
-        setState(() {
-          _agendas = agendas;
-        });
-      } else {
-        print('User ID is null');
-      }
-    } catch (e) {
-      print('Erro ao carregar agendas: $e');
+      List<Agenda> agendas = await AgendaRepository().readAgendasByUser(userId);
+      setState(() {
+        _agendas = agendas;
+      });
+        } catch (e) {
+      debugPrint('Erro ao carregar agendas: $e');
     }
   }
 
   Future<void> _loadPet() async {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      if (userId != null) {
-        List<Pet> pets = await PetRepository().readPetsByUser(userId);
-        if (pets.isNotEmpty) {
-          setState(() {
-            _pet = pets.first;
-          });
-        }
-      } else {
-        print('User ID is null');
+      List<Pet> pets = await PetRepository().readPetsByUser(userId);
+      if (pets.isNotEmpty) {
+        setState(() {
+          _pet = pets.first;
+        });
       }
-    } catch (e) {
-      print('Erro ao carregar pet: $e');
+        } catch (e) {
+      debugPrint('Erro ao carregar pet: $e');
     }
   }
 
@@ -79,25 +73,23 @@ class _AgendaScreenState extends State<AgendaScreen> {
   Future<void> _addAgenda(String data, String hora, int idPet, int idServico) async {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      if (userId != null) {
-        Agenda newAgenda = Agenda(
-          data: data,
-          hora: hora,
-          idusuario: userId,
-          idpet: idPet,
-        );
+      Agenda newAgenda = Agenda(
+        data: data,
+        hora: hora,
+        idusuario: userId,
+        idpet: idPet,
+      );
 
-        final AgendaRepository agendaRepo = AgendaRepository();
-        int agendaId = await agendaRepo.createAgenda(newAgenda);
+      final AgendaRepository agendaRepo = AgendaRepository();
+      int agendaId = await agendaRepo.createAgenda(newAgenda);
 
-        ServicoAgendaRepository servicoAgendaRepo = ServicoAgendaRepository();
-        await servicoAgendaRepo.createServicoAgenda(ServicoAgenda(idagenda: agendaId, idservico: idServico));
+      ServicoAgendaRepository servicoAgendaRepo = ServicoAgendaRepository();
+      await servicoAgendaRepo.createServicoAgenda(ServicoAgenda(idagenda: agendaId, idservico: idServico));
 
-        await _loadAgendas();
-        Navigator.of(context).pop();
-      }
-    } catch (e) {
-      print('Erro ao adicionar agenda: $e');
+      await _loadAgendas();
+      Navigator.of(context).pop();
+        } catch (e) {
+      debugPrint('Erro ao adicionar agenda: $e');
     }
   }
 
@@ -107,8 +99,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmação'),
-          content: SingleChildScrollView(
+          title: const Text('Confirmação'),
+          content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text('Tem certeza que deseja excluir esta agenda?'),
@@ -117,13 +109,13 @@ class _AgendaScreenState extends State<AgendaScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Excluir'),
+              child: const Text('Excluir'),
               onPressed: () {
                 _deleteAgenda(id);
                 Navigator.of(context).pop();
@@ -142,7 +134,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
         _agendas.removeWhere((agenda) => agenda.id == id);
       });
     } catch (e) {
-      print('Erro ao excluir agenda: $e');
+      debugPrint('Erro ao excluir agenda: $e');
     }
   }
 
@@ -150,7 +142,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agenda'),
+        title: const Text('Agenda'),
       ),
       body: ListView.builder(
         itemCount: _agendas.length,
@@ -161,7 +153,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
             title: Text('${agenda.data} ${agenda.hora}'),
             subtitle: Text('Pet: $petName'),
             trailing: IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () => _confirmDeleteAgenda(agenda.id!),
             ),
           );
@@ -169,7 +161,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openAddAgendaModal(context),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -1,17 +1,21 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:app_aula/models/usuario.dart';
 
 class UserProvider with ChangeNotifier {
-  int? _userId;
+  int _userId = -1;
+  String _token = '';
 
-  int? get userId => _userId;
+  int get userId => _userId;
+  String get token => _token;
 
-  void setUserId(int id) {
-    _userId = id;
+  void setUserData(Usuario usuario, String token) {
+    _userId = usuario.id ?? -1;
+    _token = token;
     notifyListeners();
   }
 
-  void clearUserId() {
-    _userId = null;
+  void setUserId(int id) {
+    _userId = id;
     notifyListeners();
   }
 }

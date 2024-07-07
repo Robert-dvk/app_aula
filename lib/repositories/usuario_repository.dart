@@ -14,7 +14,7 @@ class UsuarioRepository {
     final List<Map<String, dynamic>> maps = await db!.query('usuarios');
 
     return List.generate(maps.length, (i) {
-      return Usuario.fromMap(maps[i]);
+      return Usuario.fromJson(maps[i]);
     });
   }
 
@@ -37,7 +37,7 @@ class UsuarioRepository {
     );
 
     if (results.isNotEmpty) {
-      return Usuario.fromMap(results.first);
+      return Usuario.fromJson(results.first);
     } else {
       return null;
     }
@@ -62,7 +62,7 @@ class UsuarioRepository {
     );
 
     if (results.isNotEmpty) {
-      return Usuario.fromMap(results.first);
+      return Usuario.fromJson(results.first);
     } else {
       return null;
     }

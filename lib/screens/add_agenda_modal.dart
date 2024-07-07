@@ -5,15 +5,11 @@ import 'package:app_aula/models/servico.dart';
 import 'package:app_aula/repositories/pet_repository.dart';
 import 'package:app_aula/repositories/servico_repository.dart';
 import 'package:app_aula/providers/user_provider.dart';
-import 'package:app_aula/repositories/servico_agenda_repository.dart';
-import 'package:app_aula/repositories/agenda_repository.dart';
-import 'package:app_aula/models/agenda.dart';
-import 'package:app_aula/models/servicos_agenda.dart';
 
 class AddAgendaModal extends StatefulWidget {
   final Function(String, String, int, int) onAddAgenda;
 
-  AddAgendaModal(this.onAddAgenda);
+  const AddAgendaModal(this.onAddAgenda, {super.key});
 
   @override
   _AddAgendaModalState createState() => _AddAgendaModalState();
@@ -41,16 +37,12 @@ class _AddAgendaModalState extends State<AddAgendaModal> {
   Future<void> _loadPets() async {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      if (userId != null) {
-        List<Pet> pets = await PetRepository().readPetsByUser(userId);
-        setState(() {
-          _pets = pets;
-        });
-      } else {
-        print('User ID is null');
-      }
-    } catch (e) {
-      print('Erro ao carregar pets: $e');
+      List<Pet> pets = await PetRepository().readPetsByUser(userId);
+      setState(() {
+        _pets = pets;
+      });
+        } catch (e) {
+      debugPrint('Erro ao carregar pets: $e');
     }
   }
 
@@ -61,7 +53,7 @@ class _AddAgendaModalState extends State<AddAgendaModal> {
         _servicos = servicos;
       });
     } catch (e) {
-      print('Erro ao carregar serviços: $e');
+      debugPrint('Erro ao carregar serviços: $e');
     }
   }
 
@@ -74,67 +66,42 @@ class _AddAgendaModalState extends State<AddAgendaModal> {
     }
 
     try {
-      final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      if (userId != null) {
-        widget.onAddAgenda(
-          enteredData,
-          enteredHora,
-          _selectedPet!.id!,
-          _selectedServico!.id!,
-        );
-
-
-      } else {
-        print('User ID is null');
-      }
-    } catch (e) {
-      print('Erro ao adicionar agenda: $e');
-    }
-  }
-
-  Future<int> _createAgenda(int userId, String data, String hora, int idPet, int idServico) async {
-    try {
-      Agenda newAgenda = Agenda(
-        data: data,
-        hora: hora,
-        idusuario: userId,
-        idpet: idPet,
+      widget.onAddAgenda(
+        enteredData,
+        enteredHora,
+        _selectedPet!.id!,
+        _selectedServico!.id!,
       );
 
-      final AgendaRepository agendaRepo = AgendaRepository();
-      int agendaId = await agendaRepo.createAgenda(newAgenda);
 
-      ServicoAgendaRepository servicoAgendaRepo = ServicoAgendaRepository();
-      await servicoAgendaRepo.createServicoAgenda(ServicoAgenda(idagenda: agendaId, idservico: idServico));
-
-      return agendaId;
-    } catch (e) {
-      throw Exception('Erro ao criar agenda: $e');
+        } catch (e) {
+      debugPrint('Erro ao adicionar agenda: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           TextField(
             controller: _dataController,
-            decoration: InputDecoration(labelText: 'Data'),
+            decoration: const InputDecoration(labelText: 'Data'),
             onSubmitted: (_) => _submitData(),
           ),
           TextField(
             controller: _horaController,
-            decoration: InputDecoration(labelText: 'Hora'),
+            decoration: const InputDecoration(labelText: 'Hora'),
             onSubmitted: (_) => _submitData(),
           ),
           Container(
-            margin: EdgeInsets.only(top: 10),
+            margin: const EdgeInsets.only(top: 10),
             width: double.infinity,
             child: DropdownButton<Pet>(
-              hint: Text('Selecione um Pet'),
+              hint: const Text('Selecione um Pet'),
               value: _selectedPet,
               isExpanded: true,
               onChanged: (Pet? newValue) {
@@ -151,10 +118,10 @@ class _AddAgendaModalState extends State<AddAgendaModal> {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(top: 10),
+            margin: const EdgeInsets.only(top: 10),
             width: double.infinity,
             child: DropdownButton<Servico>(
-              hint: Text('Selecione um Serviço'),
+              hint: const Text('Selecione um Serviço'),
               value: _selectedServico,
               isExpanded: true,
               onChanged: (Servico? newValue) {
@@ -170,10 +137,10 @@ class _AddAgendaModalState extends State<AddAgendaModal> {
               }).toList(),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _submitData,
-            child: Text('Adicionar Agendamento'),
+            child: const Text('Adicionar Agendamento'),
           ),
         ],
       ),

@@ -8,6 +8,8 @@ import 'package:app_aula/repositories/pet_repository.dart';
 import 'package:app_aula/models/pet.dart';
 
 class PetsScreen extends StatefulWidget {
+  const PetsScreen({super.key});
+
   @override
   _PetsScreenState createState() => _PetsScreenState();
 }
@@ -24,16 +26,12 @@ class _PetsScreenState extends State<PetsScreen> {
   Future<void> _loadPets() async {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      if (userId != null) {
-        List<Pet> pets = await PetRepository().readPetsByUser(userId);
-        setState(() {
-          _pets = pets.map((pet) => pet.toMap()).toList();
-        });
-      } else {
-        print('User ID is null');
-      }
-    } catch (e) {
-      print('Erro ao carregar pets: $e');
+      List<Pet> pets = await PetRepository().readPetsByUser(userId);
+      setState(() {
+        _pets = pets.map((pet) => pet.toMap()).toList();
+      });
+        } catch (e) {
+      debugPrint('Erro ao carregar pets: $e');
     }
   }
 
@@ -46,7 +44,7 @@ class _PetsScreenState extends State<PetsScreen> {
         return GestureDetector(
           onTap: () {},
           behavior: HitTestBehavior.opaque,
-          child: AddPetModal(userId!, _addPet),
+          child: AddPetModal(userId, _addPet),
         );
       },
     );
@@ -71,7 +69,7 @@ class _PetsScreenState extends State<PetsScreen> {
 
       Navigator.of(context).pop();
     } catch (e) {
-      print('Erro ao adicionar pet: $e');
+      debugPrint('Erro ao adicionar pet: $e');
     }
   }
 
@@ -109,7 +107,7 @@ class _PetsScreenState extends State<PetsScreen> {
 
       Navigator.of(context).pop();
     } catch (e) {
-      print('Erro ao atualizar pet: $e');
+      debugPrint('Erro ao atualizar pet: $e');
     }
   }
 
@@ -119,8 +117,8 @@ class _PetsScreenState extends State<PetsScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmação'),
-          content: SingleChildScrollView(
+          title: const Text('Confirmação'),
+          content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text('Tem certeza que deseja excluir este pet?'),
@@ -129,13 +127,13 @@ class _PetsScreenState extends State<PetsScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Excluir'),
+              child: const Text('Excluir'),
               onPressed: () {
                 _deletePet(id);
                 Navigator.of(context).pop();
@@ -154,7 +152,7 @@ class _PetsScreenState extends State<PetsScreen> {
         _pets.removeWhere((pet) => pet['id'] == id);
       });
     } catch (e) {
-      print('Erro ao excluir pet: $e');
+      debugPrint('Erro ao excluir pet: $e');
     }
   }
 
@@ -162,7 +160,7 @@ class _PetsScreenState extends State<PetsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pets'),
+        title: const Text('Pets'),
       ),
       body: ListView.builder(
         itemCount: _pets.length,
@@ -174,7 +172,7 @@ class _PetsScreenState extends State<PetsScreen> {
             title: Text(_pets[index]['nome']),
             subtitle: Text(_pets[index]['datanasc']),
             trailing: IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () => _confirmDeletePet(_pets[index]['id'] as int),
             ),
             onTap: () =>
@@ -183,7 +181,7 @@ class _PetsScreenState extends State<PetsScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () => _openAddPetModal(context),
       ),
     );

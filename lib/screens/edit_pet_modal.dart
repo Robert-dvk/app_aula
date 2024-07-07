@@ -6,7 +6,7 @@ class EditPetModal extends StatefulWidget {
   final Map<String, dynamic> petData;
   final Function(int, String, String, String, double, String, double, String?, int) editPet;
 
-  EditPetModal(this.petData, this.editPet);
+  const EditPetModal(this.petData, this.editPet, {super.key});
 
   @override
   _EditPetModalState createState() => _EditPetModalState();
@@ -35,7 +35,7 @@ class _EditPetModalState extends State<EditPetModal> {
     _heightController.text = widget.petData['altura'].toString();
     _pickedImage = widget.petData['imagem'] != null ? File(widget.petData['imagem']) : null;
     _selectedSex = widget.petData['sexo'];
-    _selectedSize = widget.petData['porte']; // Mantido diretamente como o valor do porte
+    _selectedSize = widget.petData['porte'];
   }
 
   void _pickImage() async {
@@ -78,7 +78,7 @@ class _EditPetModalState extends State<EditPetModal> {
     return Card(
       elevation: 5,
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -86,7 +86,7 @@ class _EditPetModalState extends State<EditPetModal> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Nome'),
+                  decoration: const InputDecoration(labelText: 'Nome'),
                   controller: _nameController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -99,7 +99,7 @@ class _EditPetModalState extends State<EditPetModal> {
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Data de Nascimento'),
+                  decoration: const InputDecoration(labelText: 'Data de Nascimento'),
                   controller: _birthDateController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -112,7 +112,7 @@ class _EditPetModalState extends State<EditPetModal> {
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Sexo'),
+                  decoration: const InputDecoration(labelText: 'Sexo'),
                   value: _selectedSex,
                   items: ['Macho', 'Fêmea'].map((sex) {
                     return DropdownMenuItem(
@@ -136,7 +136,7 @@ class _EditPetModalState extends State<EditPetModal> {
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Peso'),
+                  decoration: const InputDecoration(labelText: 'Peso'),
                   controller: _weightController,
                   keyboardType: TextInputType.number,
                   validator: (value) {
@@ -150,7 +150,7 @@ class _EditPetModalState extends State<EditPetModal> {
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Porte'),
+                  decoration: const InputDecoration(labelText: 'Porte'),
                   value: _selectedSize,
                   items: ['Pequeno', 'Médio', 'Grande'].map((size) {
                     return DropdownMenuItem(
@@ -174,7 +174,7 @@ class _EditPetModalState extends State<EditPetModal> {
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Altura'),
+                  decoration: const InputDecoration(labelText: 'Altura'),
                   controller: _heightController,
                   keyboardType: TextInputType.number,
                   validator: (value) {
@@ -187,23 +187,23 @@ class _EditPetModalState extends State<EditPetModal> {
                     _heightController.text = value!;
                   },
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   children: <Widget>[
                     Expanded(
                       child: _pickedImage != null
                           ? Image.file(_pickedImage!, fit: BoxFit.cover)
-                          : Text('Nenhuma imagem selecionada'),
+                          : const Text('Nenhuma imagem selecionada'),
                     ),
                     IconButton(
-                      icon: Icon(Icons.camera_alt),
+                      icon: const Icon(Icons.camera_alt),
                       onPressed: _pickImage,
                     ),
                   ],
                 ),
                 ElevatedButton(
-                  child: Text('Salvar'),
                   onPressed: _submitData,
+                  child: const Text('Salvar'),
                 ),
               ],
             ),

@@ -1,6 +1,6 @@
-class AbstractService{
-  final String apiRest = 'http://127.0.0.1:8000/';
-  Map<String, String> headers = <String,String>{
-    'Content-type':'application/json'
+class AbstractService {
+  final String apiRest = 'http://10.0.2.2:8000/api/V1/api-petshop';
+  Map<String, String> headers = {
+    'Content-type': 'application/json',
   };
 }

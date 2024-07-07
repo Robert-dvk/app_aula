@@ -4,7 +4,7 @@ class Usuario {
   String telefone;
   String login;
   String senha;
-  int isadmin;
+  bool isadmin;
 
   Usuario({
     this.id,
@@ -17,7 +17,7 @@ class Usuario {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'idusuario': id,
       'nome': nome,
       'telefone': telefone,
       'login': login,
@@ -28,12 +28,24 @@ class Usuario {
 
   factory Usuario.fromMap(Map<String, dynamic> map) {
     return Usuario(
-      id: map['id'],
+      id: map['idusuario'],
       nome: map['nome'],
       telefone: map['telefone'],
       login: map['login'],
       senha: map['senha'],
-      isadmin: map['isadmin'],
+      isadmin: map['isadmin'] ?? false,
     );
   }
+
+  factory Usuario.fromJson(Map<String, dynamic> json) {
+    return Usuario(
+      id: json['idusuario'],
+      nome: json['nome'] ?? '',
+      telefone: json['telefone'] ?? '',
+      login: json['login'] ?? '',
+      senha: json['senha'] ?? '',
+      isadmin: json['isadmin'] ?? false, // Corrigido para usar operador ?? e comparação ==
+    );
+  }
+
 }

@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 
 class EditUserModal extends StatefulWidget {
   final Map<String, dynamic> userData;
-  final Function(int, String, String, String, String) onEditUser;
+  final int userId;
+  final String token;
+  final Function(Map<String, dynamic>) onEditUser;
 
-  EditUserModal(this.userData, this.onEditUser);
+  const EditUserModal({
+    required this.userData,
+    required this.userId,
+    required this.token,
+    required this.onEditUser,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _EditUserModalState createState() => _EditUserModalState();
@@ -21,17 +29,23 @@ class _EditUserModalState extends State<EditUserModal> {
   @override
   void initState() {
     super.initState();
-    _id = widget.userData['id'];
-    _nome = widget.userData['nome'];
-    _telefone = widget.userData['telefone'];
-    _login = widget.userData['login'];
-    _senha = widget.userData['senha'];
+    _id = widget.userId;
+    _nome = widget.userData['nome'] ?? '';
+    _telefone = widget.userData['telefone'] ?? '';
+    _login = widget.userData['login'] ?? '';
+    _senha = widget.userData['senha'] ?? '';
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      widget.onEditUser(_id, _nome, _telefone, _login, _senha);
+      widget.onEditUser({
+        'id': _id,
+        'nome': _nome,
+        'telefone': _telefone,
+        'login': _login,
+        'senha': _senha,
+      });
     }
   }
 
@@ -47,7 +61,7 @@ class _EditUserModalState extends State<EditUserModal> {
           children: [
             TextFormField(
               initialValue: _nome,
-              decoration: InputDecoration(labelText: 'Nome'),
+              decoration: const InputDecoration(labelText: 'Nome'),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Por favor, insira o nome';
@@ -60,7 +74,7 @@ class _EditUserModalState extends State<EditUserModal> {
             ),
             TextFormField(
               initialValue: _telefone,
-              decoration: InputDecoration(labelText: 'Telefone'),
+              decoration: const InputDecoration(labelText: 'Telefone'),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Por favor, insira o telefone';
@@ -73,7 +87,7 @@ class _EditUserModalState extends State<EditUserModal> {
             ),
             TextFormField(
               initialValue: _login,
-              decoration: InputDecoration(labelText: 'Login'),
+              decoration: const InputDecoration(labelText: 'Login'),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Por favor, insira o login';
@@ -86,7 +100,7 @@ class _EditUserModalState extends State<EditUserModal> {
             ),
             TextFormField(
               initialValue: _senha,
-              decoration: InputDecoration(labelText: 'Senha'),
+              decoration: const InputDecoration(labelText: 'Senha'),
               obscureText: true,
               validator: (value) {
                 if (value!.isEmpty) {
@@ -98,10 +112,10 @@ class _EditUserModalState extends State<EditUserModal> {
                 _senha = value!;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submitForm,
-              child: Text('Salvar'),
+              child: const Text('Salvar'),
             ),
           ],
         ),

@@ -1,5 +1,7 @@
-import 'package:app_aula/screens/login.dart';
+import 'package:app_aula/models/usuario.dart';
+import 'package:app_aula/services/usuario_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:app_aula/components/custom_bottom_navigation_bar.dart';
 import 'package:app_aula/screens/agenda.dart';
 import 'package:app_aula/screens/pets.dart';
@@ -7,15 +9,36 @@ import 'package:app_aula/screens/user.dart';
 import 'package:app_aula/providers/user_provider.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 2;
+  late UsuarioService _usuarioService;
   final PageController _pageController = PageController(initialPage: 2);
-  final UserProvider _userProvider = UserProvider();
+  @override
+  void initState() {
+    super.initState();
+     _usuarioService = UsuarioService();
+    _loadUser();
+  }
 
+  Future<void> _loadUser() async {
+    try {
+      final token = Provider.of<UserProvider>(context, listen: false).token;
+      Usuario? user = await _usuarioService.getData(token);
+      setState(() {
+        if (user != null) {
+        } else {
+        }
+      });
+        } catch (e) {
+      debugPrint('Erro ao carregar usuário: $e');
+    }
+  }
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -24,23 +47,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _signOut() {
-    _userProvider.setUserId(-1);
-
-   Navigator.of(context).pushReplacement(
-    MaterialPageRoute(
-      builder: (context) => LoginPage(),
-    ),
-  );
+    Provider.of<UserProvider>(context, listen: false).setUserId(-1);
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Petshop'),
+        title: const Text('Petshop'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.exit_to_app),
+            icon: const Icon(Icons.exit_to_app),
             onPressed: _signOut,
           ),
         ],
@@ -52,7 +70,7 @@ class _HomePageState extends State<HomePage> {
             _selectedIndex = index;
           });
         },
-        children: [
+        children: const [
           AgendaScreen(),
           PetsScreen(),
           UserScreen(),

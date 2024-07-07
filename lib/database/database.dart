@@ -17,7 +17,7 @@ class DatabaseService {
   Future<Database> _initDatabase() async {
     return await openDatabase(
       join(await getDatabasesPath(), 'petshop.db'),
-      version: 2, // Incremented version number
+      version: 2,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
