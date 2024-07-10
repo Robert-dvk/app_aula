@@ -32,4 +32,15 @@ class Agenda {
       idpet: map['idpet'],
     );
   }
+
+  factory Agenda.fromJson(Map<String, dynamic> json) {
+    return Agenda(
+      id: json['id'],
+      data: json['data'],
+      hora: json['hora'],
+      idusuario: json['idusuario'],
+      idpet: json['idpet'],
+    );
+  }
+
 }

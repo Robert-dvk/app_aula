@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_aula/providers/user_provider.dart';
-import 'package:app_aula/repositories/agenda_repository.dart';
-import 'package:app_aula/repositories/servico_agenda_repository.dart';
-import 'package:app_aula/repositories/pet_repository.dart';
+import 'package:app_aula/services/agenda_service.dart';
 import 'package:app_aula/models/agenda.dart';
-import 'package:app_aula/models/servicos_agenda.dart';
 import 'package:app_aula/models/pet.dart';
 import 'package:app_aula/screens/add_agenda_modal.dart';
 
 class AgendaScreen extends StatefulWidget {
-  const AgendaScreen({super.key});
+  const AgendaScreen({Key? key}) : super(key: key);
 
   @override
   _AgendaScreenState createState() => _AgendaScreenState();
@@ -34,25 +31,20 @@ class _AgendaScreenState extends State<AgendaScreen> {
   Future<void> _loadAgendas() async {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      List<Agenda> agendas = await AgendaRepository().readAgendasByUser(userId);
+      final token = Provider.of<UserProvider>(context, listen: false).token;
+      List<Map<String, dynamic>> agendas = await AgendaService().getAgendamentos(userId, token);
       setState(() {
-        _agendas = agendas;
+        _agendas = agendas.map((agenda) => Agenda.fromJson(agenda)).toList();
       });
-        } catch (e) {
+    } catch (e) {
       debugPrint('Erro ao carregar agendas: $e');
     }
   }
 
   Future<void> _loadPet() async {
     try {
-      final userId = Provider.of<UserProvider>(context, listen: false).userId;
-      List<Pet> pets = await PetRepository().readPetsByUser(userId);
-      if (pets.isNotEmpty) {
-        setState(() {
-          _pet = pets.first;
-        });
-      }
-        } catch (e) {
+      // Implemente a lógica para carregar o pet do usuário, se necessário
+    } catch (e) {
       debugPrint('Erro ao carregar pet: $e');
     }
   }
@@ -73,6 +65,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
   Future<void> _addAgenda(String data, String hora, int idPet, int idServico) async {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
+      final token = Provider.of<UserProvider>(context, listen: false).token;
+
       Agenda newAgenda = Agenda(
         data: data,
         hora: hora,
@@ -80,15 +74,10 @@ class _AgendaScreenState extends State<AgendaScreen> {
         idpet: idPet,
       );
 
-      final AgendaRepository agendaRepo = AgendaRepository();
-      int agendaId = await agendaRepo.createAgenda(newAgenda);
-
-      ServicoAgendaRepository servicoAgendaRepo = ServicoAgendaRepository();
-      await servicoAgendaRepo.createServicoAgenda(ServicoAgenda(idagenda: agendaId, idservico: idServico));
-
+      await AgendaService().createAgenda(newAgenda, idServico, token);
       await _loadAgendas();
       Navigator.of(context).pop();
-        } catch (e) {
+    } catch (e) {
       debugPrint('Erro ao adicionar agenda: $e');
     }
   }
@@ -117,7 +106,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
             TextButton(
               child: const Text('Excluir'),
               onPressed: () {
-                _deleteAgenda(id);
+                //_deleteAgenda(id);
                 Navigator.of(context).pop();
               },
             ),
@@ -127,38 +116,42 @@ class _AgendaScreenState extends State<AgendaScreen> {
     );
   }
 
-  Future<void> _deleteAgenda(int id) async {
-    try {
-      await AgendaRepository().deleteAgenda(id);
-      setState(() {
-        _agendas.removeWhere((agenda) => agenda.id == id);
-      });
-    } catch (e) {
-      debugPrint('Erro ao excluir agenda: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue, // Cor de fundo da tela
       appBar: AppBar(
         title: const Text('Agenda'),
       ),
-      body: ListView.builder(
-        itemCount: _agendas.length,
-        itemBuilder: (ctx, index) {
-          final agenda = _agendas[index];
-          final petName = _pet?.nome ?? 'Pet desconhecido';
-          return ListTile(
-            title: Text('${agenda.data} ${agenda.hora}'),
-            subtitle: Text('Pet: $petName'),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () => _confirmDeleteAgenda(agenda.id!),
+      body: _agendas.isEmpty
+          ? Center(
+              child: Text(
+                'Nenhuma agenda encontrada.',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            )
+          : ListView.builder(
+              itemCount: _agendas.length,
+              itemBuilder: (ctx, index) {
+                final agenda = _agendas[index];
+                final petName = _pet?.nome ?? 'Pet desconhecido';
+                return Card(
+                  elevation: 4, // Elevação para um efeito de card
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: ListTile(
+                    title: Text(
+                      '${agenda.data} ${agenda.hora}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('Pet: $petName'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _confirmDeleteAgenda(agenda.id!),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openAddAgendaModal(context),
         child: const Icon(Icons.add),

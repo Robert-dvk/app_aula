@@ -1,24 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:app_aula/services/pets_service.dart';
 
 class EditPetModal extends StatefulWidget {
   final Map<String, dynamic> petData;
-  final Function(
-    int,
-    String,
-    String,
-    String,
-    double,
-    String,
-    double,
-    String?,
-    int,
-  ) editPet;
+  final String token;
+  final Function onPetUpdated;
 
-  const EditPetModal(
-    this.petData,
-    this.editPet, {
+  const EditPetModal({
+    required this.petData,
+    required this.token,
+    required this.onPetUpdated,
     Key? key,
   }) : super(key: key);
 
@@ -35,6 +28,7 @@ class _EditPetModalState extends State<EditPetModal> {
   String? _pickedImage;
   String? _selectedSex;
   String? _selectedSize;
+  final PetsService _petsService = PetsService();
 
   @override
   void initState() {
@@ -54,9 +48,7 @@ class _EditPetModalState extends State<EditPetModal> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedImageFile = await picker.pickImage(
-      source: ImageSource.camera,
-    );
+    final pickedImageFile = await picker.pickImage(source: ImageSource.camera);
     if (pickedImageFile != null) {
       setState(() {
         _pickedImage = pickedImageFile.path;
@@ -64,26 +56,58 @@ class _EditPetModalState extends State<EditPetModal> {
     }
   }
 
-  void _submitData() {
+  Future<String?> _getStringImage(File? file) async {
+    if (file == null) return null;
+    return _petsService.getStringImage(file);
+  }
+
+  void _submitData() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
       final id = widget.petData['id'] as int;
       final enteredName = _nameController.text;
       final enteredBirthDate = _birthDateController.text;
       final enteredWeight = double.parse(_weightController.text);
       final enteredHeight = double.parse(_heightController.text);
+      final imageFile = _pickedImage != null
+          ? await _getStringImage(File(_pickedImage!))
+          : '';
 
-      widget.editPet(
-        id,
-        enteredName,
-        enteredBirthDate,
-        _selectedSex!,
-        enteredWeight,
-        _selectedSize!,
-        enteredHeight,
-        _pickedImage,
-        widget.petData['idusuario'] as int,
-      );
+      final petData = {
+        'id': id,
+        'nome': enteredName,
+        'datanasc': enteredBirthDate,
+        'sexo': _selectedSex,
+        'peso': enteredWeight,
+        'porte': _selectedSize,
+        'altura': enteredHeight,
+        'idusuario': widget.petData['idusuario'],
+        'imagem': imageFile,
+      };
+
+      try {
+        await _petsService.editPet(petData, widget.token, imageFile ?? '');
+        widget.onPetUpdated();
+      } catch (e) {
+        // Handle error
+        print('Error updating pet: $e');
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Erro'),
+            content: const Text('Falha ao atualizar o pet.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -108,9 +132,6 @@ class _EditPetModalState extends State<EditPetModal> {
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _nameController.text = value!;
-                  },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -122,9 +143,6 @@ class _EditPetModalState extends State<EditPetModal> {
                       return 'Data de Nascimento é obrigatória';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    _birthDateController.text = value!;
                   },
                 ),
                 const SizedBox(height: 12),
@@ -146,9 +164,6 @@ class _EditPetModalState extends State<EditPetModal> {
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _selectedSex = value!;
-                  },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -160,9 +175,6 @@ class _EditPetModalState extends State<EditPetModal> {
                       return 'Peso é obrigatório';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    _weightController.text = value!;
                   },
                 ),
                 const SizedBox(height: 12),
@@ -186,9 +198,6 @@ class _EditPetModalState extends State<EditPetModal> {
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    _selectedSize = value!;
-                  },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -200,9 +209,6 @@ class _EditPetModalState extends State<EditPetModal> {
                       return 'Altura é obrigatória';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    _heightController.text = value!;
                   },
                 ),
                 const SizedBox(height: 20),
@@ -237,7 +243,7 @@ class _EditPetModalState extends State<EditPetModal> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitData,
-                  child: const Text('Salvar'),
+                  child: const Text('Salvar Alterações'),
                 ),
               ],
             ),

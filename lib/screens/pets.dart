@@ -82,13 +82,28 @@ class _PetsScreenState extends State<PetsScreen> {
   }
 
   void _openEditPetModal(BuildContext context, Pet pet) {
+    final token = Provider.of<UserProvider>(context, listen: false).token;
     showModalBottomSheet(
       context: context,
       builder: (_) {
         return GestureDetector(
           onTap: () {},
           behavior: HitTestBehavior.opaque,
-          child: EditPetModal(pet.toMap(), _editPet),
+          child: EditPetModal(
+            petData: pet.toMap(),
+            token: token,
+            onPetUpdated: () => _editPet(
+              pet.id!,
+              pet.nome,
+              pet.datanasc,
+              pet.sexo,
+              pet.peso,
+              pet.porte,
+              pet.altura,
+              pet.imagem,
+              pet.idusuario,
+            ),
+          ),
         );
       },
     );

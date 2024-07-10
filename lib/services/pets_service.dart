@@ -65,10 +65,12 @@ class PetsService extends AbstractService {
   }
 
   Future<Map<String, dynamic>> editPet(
-    Map<String, dynamic> petData, String token, String imageFile) async {
+      Map<String, dynamic> petData, String token, String imageFile) async {
     final petId = petData['id'];
+    print('Editando pet com ID: $petId');
 
     final url = Uri.parse('$apiRest/pets/$petId');
+    print('URL: $url');
 
     final request = http.MultipartRequest('PUT', url);
     request.headers['Authorization'] = 'Bearer $token';
@@ -83,20 +85,26 @@ class PetsService extends AbstractService {
     request.fields['imagem'] = imageFile;
 
     try {
+      print('Enviando request...');
       final response = await request.send();
       final responseData = await http.Response.fromStream(response);
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${responseData.body}');
+      print('Imagem: ${request.fields['imagem']}');
 
       if (response.statusCode == 200) {
         final decodedData = json.decode(responseData.body);
+        print('Pet atualizado com sucesso: $decodedData');
         return decodedData;
       } else {
+        print('Erro ao atualizar pet: ${responseData.body}');
         throw Exception('Failed to edit pet: ${responseData.body}');
       }
     } catch (e) {
+      print('Erro durante a request: $e');
       throw Exception('Error during request: $e');
     }
   }
-
 
   Future<void> deletePet(int petId, String token) async {
     final url = Uri.parse('$apiRest/pets/$petId');
