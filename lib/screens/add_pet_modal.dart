@@ -1,12 +1,20 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:app_aula/services/pets_service.dart';
+import 'package:app_aula/providers/user_provider.dart';
 
 class AddPetModal extends StatefulWidget {
   final int userId;
-  final Function addPet;
+  final Function(String, String, String, double, String, double, String?, int)
+      addPet;
 
-  const AddPetModal(this.userId, this.addPet, {super.key});
+  const AddPetModal({
+    required this.userId,
+    required this.addPet,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _AddPetModalState createState() => _AddPetModalState();
@@ -33,10 +41,11 @@ class _AddPetModalState extends State<AddPetModal> {
     }
   }
 
-  void _submitData() {
+  void _submitData() async {
     if (_pickedImage == null) {
       return;
     }
+    String? image = await PetsService().getStringImage(_pickedImage);
 
     final enteredName = _nameController.text;
     final enteredBirthDate = _birthDateController.text;
@@ -52,17 +61,36 @@ class _AddPetModalState extends State<AddPetModal> {
       return;
     }
 
-    widget.addPet(
-      enteredName,
-      enteredBirthDate,
-      _selectedSex!,
-      enteredWeight,
-      _selectedSize!,
-      enteredHeight,
-      _pickedImage!.path,
-      widget.userId,
-    );
+    try {
+      final petsService = PetsService();
+      final token = Provider.of<UserProvider>(context, listen: false).token;
+
+      final petData = {
+        'nome': enteredName,
+        'datanasc': enteredBirthDate,
+        'sexo': _selectedSex!.substring(0, 1).toLowerCase(),
+        'peso': enteredWeight.toString(),
+        'porte': _selectedSize!,
+        'altura': enteredHeight.toString(),
+        'idusuario': widget.userId.toString(),
+      };
+
+      await petsService.savePet(petData, token, image!);
+      widget.addPet(
+        enteredName,
+        enteredBirthDate,
+        _selectedSex!,
+        enteredWeight,
+        _selectedSize!,
+        enteredHeight,
+        _pickedImage!.path,
+        widget.userId,
+      );
+    } catch (e) {
+      print('Error saving pet: $e');
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +107,8 @@ class _AddPetModalState extends State<AddPetModal> {
                 controller: _nameController,
               ),
               TextField(
-                decoration: const InputDecoration(labelText: 'Data de Nascimento'),
+                decoration:
+                    const InputDecoration(labelText: 'Data de Nascimento'),
                 controller: _birthDateController,
               ),
               DropdownButtonFormField<String>(

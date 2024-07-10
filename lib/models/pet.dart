@@ -23,13 +23,13 @@ class Pet {
 
   factory Pet.fromMap(Map<String, dynamic> map) {
     return Pet(
-      id: map['id'],
+      id: map['idpet'],
       nome: map['nome'],
       datanasc: map['datanasc'],
       sexo: map['sexo'],
-      peso: map['peso'],
+      peso: double.parse(map['peso'].toString()),
       porte: map['porte'],
-      altura: map['altura'],
+      altura: double.parse(map['altura'].toString()),
       imagem: map['imagem'],
       idusuario: map['idusuario'],
     );
@@ -47,7 +47,7 @@ class Pet {
       'idusuario': idusuario,
     };
     if (withId) {
-      map['id'] = id;
+      map['id'] = id; // Ajuste para o campo idpet
     }
     return map;
   }

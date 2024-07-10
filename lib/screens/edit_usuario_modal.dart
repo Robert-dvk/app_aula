@@ -53,71 +53,86 @@ class _EditUserModalState extends State<EditUserModal> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              initialValue: _nome,
-              decoration: const InputDecoration(labelText: 'Nome'),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Por favor, insira o nome';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _nome = value!;
-              },
+      child: Card(
+        elevation: 5,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  initialValue: _nome,
+                  decoration: const InputDecoration(labelText: 'Nome'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Por favor, insira o nome';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _nome = value!;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  initialValue: _telefone,
+                  decoration: const InputDecoration(labelText: 'Telefone'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Por favor, insira o telefone';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _telefone = value!;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  initialValue: _login,
+                  decoration: const InputDecoration(labelText: 'Login'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Por favor, insira o login';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _login = value!;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  initialValue: _senha,
+                  decoration: const InputDecoration(labelText: 'Senha'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Por favor, insira a senha';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _senha = value!;
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                  ),
+                  child: const Text(
+                      'Salvar',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                ),
+              ],
             ),
-            TextFormField(
-              initialValue: _telefone,
-              decoration: const InputDecoration(labelText: 'Telefone'),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Por favor, insira o telefone';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _telefone = value!;
-              },
-            ),
-            TextFormField(
-              initialValue: _login,
-              decoration: const InputDecoration(labelText: 'Login'),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Por favor, insira o login';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _login = value!;
-              },
-            ),
-            TextFormField(
-              initialValue: _senha,
-              decoration: const InputDecoration(labelText: 'Senha'),
-              obscureText: true,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Por favor, insira a senha';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _senha = value!;
-              },
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _submitForm,
-              child: const Text('Salvar'),
-            ),
-          ],
+          ),
         ),
       ),
     );

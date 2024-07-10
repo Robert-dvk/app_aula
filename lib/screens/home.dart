@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
 
   void _signOut() {
     Provider.of<UserProvider>(context, listen: false).setUserId(-1);
-    Navigator.of(context).pushReplacementNamed('/');
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override

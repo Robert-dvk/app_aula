@@ -4,9 +4,23 @@ import 'package:image_picker/image_picker.dart';
 
 class EditPetModal extends StatefulWidget {
   final Map<String, dynamic> petData;
-  final Function(int, String, String, String, double, String, double, String?, int) editPet;
+  final Function(
+    int,
+    String,
+    String,
+    String,
+    double,
+    String,
+    double,
+    String?,
+    int,
+  ) editPet;
 
-  const EditPetModal(this.petData, this.editPet, {super.key});
+  const EditPetModal(
+    this.petData,
+    this.editPet, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   _EditPetModalState createState() => _EditPetModalState();
@@ -18,7 +32,7 @@ class _EditPetModalState extends State<EditPetModal> {
   final _birthDateController = TextEditingController();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
-  File? _pickedImage;
+  String? _pickedImage;
   String? _selectedSex;
   String? _selectedSize;
 
@@ -33,19 +47,19 @@ class _EditPetModalState extends State<EditPetModal> {
     _birthDateController.text = widget.petData['datanasc'];
     _weightController.text = widget.petData['peso'].toString();
     _heightController.text = widget.petData['altura'].toString();
-    _pickedImage = widget.petData['imagem'] != null ? File(widget.petData['imagem']) : null;
+    _pickedImage = widget.petData['imagem'] as String?;
     _selectedSex = widget.petData['sexo'];
     _selectedSize = widget.petData['porte'];
   }
 
-  void _pickImage() async {
+  Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedImageFile = await picker.pickImage(
       source: ImageSource.camera,
     );
     if (pickedImageFile != null) {
       setState(() {
-        _pickedImage = File(pickedImageFile.path);
+        _pickedImage = pickedImageFile.path;
       });
     }
   }
@@ -67,7 +81,7 @@ class _EditPetModalState extends State<EditPetModal> {
         enteredWeight,
         _selectedSize!,
         enteredHeight,
-        _pickedImage?.path,
+        _pickedImage,
         widget.petData['idusuario'] as int,
       );
     }
@@ -78,12 +92,12 @@ class _EditPetModalState extends State<EditPetModal> {
     return Card(
       elevation: 5,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Nome'),
@@ -98,8 +112,10 @@ class _EditPetModalState extends State<EditPetModal> {
                     _nameController.text = value!;
                   },
                 ),
+                const SizedBox(height: 12),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Data de Nascimento'),
+                  decoration:
+                      const InputDecoration(labelText: 'Data de Nascimento'),
                   controller: _birthDateController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -111,15 +127,14 @@ class _EditPetModalState extends State<EditPetModal> {
                     _birthDateController.text = value!;
                   },
                 ),
+                const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Sexo'),
                   value: _selectedSex,
-                  items: ['Macho', 'Fêmea'].map((sex) {
-                    return DropdownMenuItem(
-                      value: sex,
-                      child: Text(sex),
-                    );
-                  }).toList(),
+                  items: const [
+                    DropdownMenuItem(value: 'm', child: Text('Macho')),
+                    DropdownMenuItem(value: 'f', child: Text('Fêmea')),
+                  ],
                   onChanged: (value) {
                     setState(() {
                       _selectedSex = value;
@@ -135,6 +150,7 @@ class _EditPetModalState extends State<EditPetModal> {
                     _selectedSex = value!;
                   },
                 ),
+                const SizedBox(height: 12),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Peso'),
                   controller: _weightController,
@@ -149,6 +165,7 @@ class _EditPetModalState extends State<EditPetModal> {
                     _weightController.text = value!;
                   },
                 ),
+                const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Porte'),
                   value: _selectedSize,
@@ -173,6 +190,7 @@ class _EditPetModalState extends State<EditPetModal> {
                     _selectedSize = value!;
                   },
                 ),
+                const SizedBox(height: 12),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Altura'),
                   controller: _heightController,
@@ -187,13 +205,28 @@ class _EditPetModalState extends State<EditPetModal> {
                     _heightController.text = value!;
                   },
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 Row(
                   children: <Widget>[
                     Expanded(
                       child: _pickedImage != null
-                          ? Image.file(_pickedImage!, fit: BoxFit.cover)
-                          : const Text('Nenhuma imagem selecionada'),
+                          ? _pickedImage!.startsWith('http')
+                              ? Image.network(
+                                  _pickedImage!,
+                                  fit: BoxFit.cover,
+                                  height: 400,
+                                )
+                              : Image.file(
+                                  File(_pickedImage!),
+                                  fit: BoxFit.cover,
+                                  height: 400,
+                                )
+                          : const SizedBox(
+                              height: 30,
+                              child: Center(
+                                child: Text('Nenhuma imagem selecionada'),
+                              ),
+                            ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.camera_alt),
@@ -201,6 +234,7 @@ class _EditPetModalState extends State<EditPetModal> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitData,
                   child: const Text('Salvar'),

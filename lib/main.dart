@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:app_aula/providers/user_provider.dart';
 import 'package:app_aula/screens/login.dart';
 import 'package:app_aula/screens/home.dart';
+import 'package:app_aula/screens/register.dart'; // Importe a tela de registro aqui
 
 void main() {
   runApp(
@@ -16,7 +17,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +26,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(),
+      initialRoute: '/login',
       routes: {
+        '/login': (context) => LoginPage(),
+        '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
       },
     );

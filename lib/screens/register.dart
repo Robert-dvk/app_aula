@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:app_aula/database/database.dart';
+import 'package:app_aula/services/usuario_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,6 +16,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final bool _isAdmin = false;
+
+  final UsuarioService _usuarioService = UsuarioService();
 
   @override
   void dispose() {
@@ -34,24 +36,27 @@ class _RegisterPageState extends State<RegisterPage> {
       String name = _nameController.text;
       String phone = _phoneController.text;
 
-      await _saveUserToDatabase(username, password, name, phone, _isAdmin);
-
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> _saveUserToDatabase(String username, String password, String name, String phone, bool isAdmin) async {
-    final db = await DatabaseService.instance.database;
-    await db!.insert(
-      'usuarios',
-      {
+      Map<String, dynamic> userData = {
         'nome': name,
         'telefone': phone,
         'login': username,
         'senha': password,
-        'isadmin': isAdmin ? true : false,
-      },
-    );
+        'isAdmin': _isAdmin,
+      };
+
+      Map<String, dynamic> result = await _usuarioService.createUser(userData);
+
+      if (result['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'])),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'])),
+        );
+      }
+    }
   }
 
   @override

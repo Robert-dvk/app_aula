@@ -9,11 +9,6 @@ class AuthService extends AbstractService {
       body: jsonEncode({'login': login, 'senha': senha}),
       headers: headers,
     );
-
-    print(Uri.parse('$apiRest/usuarios/login'));
-
-    print(response.statusCode);
-
     if (response.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(response.body);
       return {

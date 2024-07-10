@@ -1,13 +1,13 @@
+import 'package:app_aula/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_aula/providers/user_provider.dart';
-import 'package:app_aula/repositories/usuario_repository.dart';
 import 'package:app_aula/models/usuario.dart';
 import 'package:app_aula/screens/edit_usuario_modal.dart';
 import 'package:app_aula/services/usuario_service.dart';
 
 class UserScreen extends StatefulWidget {
-  const UserScreen({Key? key}) : super(key: key);
+  const UserScreen({super.key});
 
   @override
   _UserScreenState createState() => _UserScreenState();
@@ -41,36 +41,36 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   void _openEditUserModal(BuildContext context, Usuario user) {
-  showModalBottomSheet(
-    context: context,
-    builder: (_) {
-      return GestureDetector(
-        onTap: () {},
-        behavior: HitTestBehavior.opaque,
-        child: EditUserModal(
-          userData: user.toMap(),
-          userId: user.id ?? 0,
-          token: Provider.of<UserProvider>(context, listen: false).token,
-          onEditUser: _editUser,
-        ),
-      );
-    },
-  );
-}
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: GestureDetector(
+            onTap: () {},
+            behavior: HitTestBehavior.opaque,
+            child: EditUserModal(
+              userData: user.toMap(),
+              userId: user.id ?? 0,
+              token: Provider.of<UserProvider>(context, listen: false).token,
+              onEditUser: _editUser,
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _editUser(Map<String, dynamic> userData) async {
     try {
       final token = Provider.of<UserProvider>(context, listen: false).token;
-      final result = await _usuarioService.updateUser(userData['id'], token, userData);
-      print(userData['id']);
-      print(token);
-      print(userData);
+      final result =
+          await _usuarioService.updateUser(userData['id'], token, userData);
       if (result['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(result['message'])),
         );
         await _loadUsers();
-        Navigator.of(context).pop(); // NÂO ADICIONAR ESSA LINHA
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(result['message'])),
@@ -97,12 +97,18 @@ class _UserScreenState extends State<UserScreen> {
           ),
           actions: <Widget>[
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
               child: const Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.green,
+              ),
               child: const Text('Excluir'),
               onPressed: () {
                 _deleteUser(id);
@@ -116,33 +122,58 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Future<void> _deleteUser(int id) async {
-    try {
-      await UsuarioRepository().deleteUser(id);
+  try {
+    final token = Provider.of<UserProvider>(context, listen: false).token;
+    final result = await _usuarioService.deleteUser(id, token);
+    if (result['status'] == 'success') {
       setState(() {
         _users.removeWhere((user) => user.id == id);
       });
-    } catch (e) {
-      debugPrint('Erro ao excluir usuário: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'])),
+      );
+      
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'])),
+      );
     }
+  } catch (e) {
+    debugPrint('Erro ao excluir usuário: $e');
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue,
       appBar: AppBar(
-        title: const Text('Usuários'),
+        title: const Text('Perfil'),
       ),
       body: ListView.builder(
         itemCount: _users.length,
         itemBuilder: (ctx, index) {
-          return ListTile(
-            title: Text(_users[index].nome),
-            subtitle: Text(_users[index].telefone),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () => _confirmDeleteUser(_users[index].id!),
+          return Card(
+            elevation: 3,
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            color: Colors.grey[200],
+            child: ListTile(
+              title: Text(
+                _users[index].nome,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(_users[index].telefone),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                color: Colors.red,
+                onPressed: () => _confirmDeleteUser(_users[index].id!),
+              ),
+              onTap: () => _openEditUserModal(context, _users[index]),
             ),
-            onTap: () => _openEditUserModal(context, _users[index]),
           );
         },
       ),
