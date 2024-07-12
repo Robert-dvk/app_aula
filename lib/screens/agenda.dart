@@ -30,9 +30,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
       final token = Provider.of<UserProvider>(context, listen: false).token;
-      List<Map<String, dynamic>> agendas =
-          await AgendaService().getAgendamentos(userId, token);
-      print(agendas);
+      List<Map<String, dynamic>> agendas = await AgendaService().getAgendamentos(userId, token);
       setState(() {
         _agendas = agendas.map((agenda) => Agenda.fromJson(agenda)).toList();
       });

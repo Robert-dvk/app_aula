@@ -66,7 +66,6 @@ class PetsService extends AbstractService {
   Future<Map<String, dynamic>> editPet(
       Map<String, dynamic> petData, String token, String imageFile) async {
     final url = Uri.parse('$apiRest/pets/${petData['id']}');
-    print('URL: $url');
 
     final headers = {
       'Authorization': 'Bearer $token',
@@ -84,18 +83,12 @@ class PetsService extends AbstractService {
       'imagem': imageFile,
     };
 
-    print('Corpo da requisição: $body');
-    
     try {
-      print('Enviando request...');
       final response = await http.put(
         url,
         headers: headers,
         body: json.encode(body),
       );
-
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final decodedData = json.decode(response.body);

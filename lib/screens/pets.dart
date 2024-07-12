@@ -120,19 +120,6 @@ class _PetsScreenState extends State<PetsScreen> {
       String? imagem,
       int idusuario) async {
     try {
-      Pet pet = Pet(
-        id: id,
-        nome: nome,
-        datanasc: datanasc,
-        sexo: sexo,
-        peso: peso,
-        porte: porte,
-        altura: altura,
-        imagem: imagem,
-        idusuario: idusuario,
-      );
-
-      await PetRepository().updatePet(pet);
       await _loadPets();
 
       Navigator.of(context).pop();

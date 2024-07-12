@@ -84,8 +84,6 @@ class AgendaService extends AbstractService {
         'idservico': idServico,
       };
 
-      print('Body da requisição: $body');
-
       final response = await http.post(
         url,
         body: jsonEncode(body),
