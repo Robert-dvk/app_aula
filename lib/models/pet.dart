@@ -35,6 +35,20 @@ class Pet {
     );
   }
 
+  factory Pet.fromJson(Map<String, dynamic> json) {
+    return Pet(
+      id: json['idpet'],
+      nome: json['nome'],
+      datanasc: json['datanasc'],
+      sexo: json['sexo'],
+      peso: double.parse(json['peso'].toString()),
+      porte: json['porte'],
+      altura: double.parse(json['altura'].toString()),
+      imagem: json['imagem'],
+      idusuario: json['idusuario'],
+    );
+  }
+
   Map<String, dynamic> toMap({bool withId = true}) {
     var map = {
       'nome': nome,
@@ -47,7 +61,7 @@ class Pet {
       'idusuario': idusuario,
     };
     if (withId) {
-      map['id'] = id; // Ajuste para o campo idpet
+      map['idpet'] = id;
     }
     return map;
   }

@@ -4,12 +4,18 @@ class Agenda {
   String hora;
   int idusuario;
   int idpet;
+  String? nomepet;
+  String? serviconome;
+  double? servicovalor;
 
   Agenda({
     this.id,
     required this.data,
     required this.hora,
     required this.idusuario,
+    this.nomepet,
+    this.serviconome,
+    this.servicovalor,
     required this.idpet,
   });
 
@@ -35,12 +41,14 @@ class Agenda {
 
   factory Agenda.fromJson(Map<String, dynamic> json) {
     return Agenda(
-      id: json['id'],
+      id: json['idagenda'],
       data: json['data'],
       hora: json['hora'],
       idusuario: json['idusuario'],
+      nomepet: json['pet_nome'],
+      serviconome: json['servico_nome'],
+      servicovalor: double.parse(json['servico_valor'].toString()),
       idpet: json['idpet'],
     );
   }
-
 }

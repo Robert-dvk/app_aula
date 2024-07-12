@@ -24,7 +24,6 @@ class _EditUserModalState extends State<EditUserModal> {
   late String _nome;
   late String _telefone;
   late String _login;
-  late String _senha;
 
   @override
   void initState() {
@@ -33,7 +32,6 @@ class _EditUserModalState extends State<EditUserModal> {
     _nome = widget.userData['nome'] ?? '';
     _telefone = widget.userData['telefone'] ?? '';
     _login = widget.userData['login'] ?? '';
-    _senha = widget.userData['senha'] ?? '';
   }
 
   void _submitForm() {
@@ -44,8 +42,8 @@ class _EditUserModalState extends State<EditUserModal> {
         'nome': _nome,
         'telefone': _telefone,
         'login': _login,
-        'senha': _senha,
       });
+      Navigator.of(context).pop();
     }
   }
 
@@ -102,21 +100,6 @@ class _EditUserModalState extends State<EditUserModal> {
                   },
                   onSaved: (value) {
                     _login = value!;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  initialValue: _senha,
-                  decoration: const InputDecoration(labelText: 'Senha'),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor, insira a senha';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _senha = value!;
                   },
                 ),
                 const SizedBox(height: 20),

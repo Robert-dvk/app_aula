@@ -41,7 +41,7 @@ class _EditPetModalState extends State<EditPetModal> {
     _birthDateController.text = widget.petData['datanasc'];
     _weightController.text = widget.petData['peso'].toString();
     _heightController.text = widget.petData['altura'].toString();
-    _pickedImage = widget.petData['imagem'] as String?;
+    _pickedImage = widget.petData['imagem'];
     _selectedSex = widget.petData['sexo'];
     _selectedSize = widget.petData['porte'];
   }
@@ -56,23 +56,45 @@ class _EditPetModalState extends State<EditPetModal> {
     }
   }
 
-  Future<String?> _getStringImage(File? file) async {
-    if (file == null) return null;
-    return _petsService.getStringImage(file);
+  Future<String?> _getImageData() async {
+    if (_pickedImage == null) return null;
+    if (_pickedImage!.startsWith('http')) {
+      return _pickedImage;
+    } else {
+      File imageFile = File(_pickedImage!);
+      return _petsService.getStringImage(imageFile);
+    }
   }
 
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      final id = widget.petData['id'] as int;
+      final id = widget.petData['idpet'];
+      if (id == null) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Erro'),
+            content: const Text('ID do pet não encontrado.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
       final enteredName = _nameController.text;
       final enteredBirthDate = _birthDateController.text;
       final enteredWeight = double.parse(_weightController.text);
       final enteredHeight = double.parse(_heightController.text);
-      final imageFile = _pickedImage != null
-          ? await _getStringImage(File(_pickedImage!))
-          : '';
+      final imageData = await _getImageData();
 
       final petData = {
         'id': id,
@@ -83,14 +105,12 @@ class _EditPetModalState extends State<EditPetModal> {
         'porte': _selectedSize,
         'altura': enteredHeight,
         'idusuario': widget.petData['idusuario'],
-        'imagem': imageFile,
       };
 
       try {
-        await _petsService.editPet(petData, widget.token, imageFile ?? '');
+        await _petsService.editPet(petData, widget.token, imageData ?? '');
         widget.onPetUpdated();
       } catch (e) {
-        // Handle error
         print('Error updating pet: $e');
         showDialog(
           context: context,

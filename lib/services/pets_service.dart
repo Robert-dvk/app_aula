@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
 import 'abstract_service.dart';
 
 class PetsService extends AbstractService {
@@ -66,39 +65,45 @@ class PetsService extends AbstractService {
 
   Future<Map<String, dynamic>> editPet(
       Map<String, dynamic> petData, String token, String imageFile) async {
-    final petId = petData['id'];
-    print('Editando pet com ID: $petId');
-
-    final url = Uri.parse('$apiRest/pets/$petId');
+    final url = Uri.parse('$apiRest/pets/${petData['id']}');
     print('URL: $url');
 
-    final request = http.MultipartRequest('PUT', url);
-    request.headers['Authorization'] = 'Bearer $token';
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
 
-    request.fields['nome'] = petData['nome'];
-    request.fields['datanasc'] = petData['datanasc'];
-    request.fields['sexo'] = petData['sexo'];
-    request.fields['peso'] = petData['peso'].toString();
-    request.fields['porte'] = petData['porte'];
-    request.fields['altura'] = petData['altura'].toString();
-    request.fields['idusuario'] = petData['idusuario'].toString();
-    request.fields['imagem'] = imageFile;
+    final body = {
+      'nome': petData['nome'],
+      'datanasc': petData['datanasc'],
+      'sexo': petData['sexo'],
+      'peso': petData['peso'].toString(),
+      'porte': petData['porte'],
+      'altura': petData['altura'].toString(),
+      'idusuario': petData['idusuario'].toString(),
+      'imagem': imageFile,
+    };
 
+    print('Corpo da requisição: $body');
+    
     try {
       print('Enviando request...');
-      final response = await request.send();
-      final responseData = await http.Response.fromStream(response);
+      final response = await http.put(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+
       print('Response status code: ${response.statusCode}');
-      print('Response body: ${responseData.body}');
-      print('Imagem: ${request.fields['imagem']}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final decodedData = json.decode(responseData.body);
+        final decodedData = json.decode(response.body);
         print('Pet atualizado com sucesso: $decodedData');
         return decodedData;
       } else {
-        print('Erro ao atualizar pet: ${responseData.body}');
-        throw Exception('Failed to edit pet: ${responseData.body}');
+        print('Erro ao atualizar pet: ${response.body}');
+        throw Exception('Failed to edit pet: ${response.body}');
       }
     } catch (e) {
       print('Erro durante a request: $e');

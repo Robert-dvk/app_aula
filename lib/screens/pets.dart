@@ -29,8 +29,7 @@ class _PetsScreenState extends State<PetsScreen> {
     try {
       final userId = Provider.of<UserProvider>(context, listen: false).userId;
       final token = Provider.of<UserProvider>(context, listen: false).token;
-      List<Map<String, dynamic>> petsData =
-          await _petsService.getMyPets(userId, token);
+      List<Map<String, dynamic>> petsData = await _petsService.getMyPets(userId, token);
 
       List<Pet> pets = petsData.map((data) => Pet.fromMap(data)).toList();
       setState(() {
@@ -52,6 +51,7 @@ class _PetsScreenState extends State<PetsScreen> {
           child: AddPetModal(
             userId: userId,
             addPet: _addPet,
+            loadPets: _loadPets,
           ),
         );
       },
@@ -167,7 +167,8 @@ class _PetsScreenState extends State<PetsScreen> {
               onPressed: () async {
                 Navigator.of(context).pop();
                 try {
-                  final token = Provider.of<UserProvider>(context, listen: false).token;
+                  final token =
+                      Provider.of<UserProvider>(context, listen: false).token;
                   await _petsService.deletePet(id, token);
                   setState(() {
                     _pets.removeWhere((pet) => pet.id == id);
@@ -238,14 +239,14 @@ class _PetsScreenState extends State<PetsScreen> {
         ),
       );
     } else if (image.startsWith('http')) {
-      // Altere 'http://10.0.2.2:8000' para 'http://localhost:8000'
-      String localImageURL = image.replaceFirst('http://localhost', 'http://10.0.2.2');
+      String localImageURL =
+          image.replaceFirst('http://localhost', 'http://10.0.2.2');
       return Image.network(
         localImageURL,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           debugPrint('Erro ao carregar imagem: $error');
-          return _buildPlaceholder(); // Substituir por um widget de erro personalizado, se necessário
+          return _buildPlaceholder();
         },
       );
     } else {

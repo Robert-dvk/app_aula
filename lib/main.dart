@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:app_aula/providers/user_provider.dart';
 import 'package:app_aula/screens/login.dart';
 import 'package:app_aula/screens/home.dart';
-import 'package:app_aula/screens/register.dart'; // Importe a tela de registro aqui
+import 'package:app_aula/screens/register.dart';
 
 void main() {
   runApp(

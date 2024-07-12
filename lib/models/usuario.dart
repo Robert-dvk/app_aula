@@ -44,7 +44,7 @@ class Usuario {
       telefone: json['telefone'] ?? '',
       login: json['login'] ?? '',
       senha: json['senha'] ?? '',
-      isadmin: json['isadmin'] ?? false, // Corrigido para usar operador ?? e comparação ==
+      isadmin: json['isadmin'] ?? false,
     );
   }
 

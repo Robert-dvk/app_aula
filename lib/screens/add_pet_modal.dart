@@ -9,10 +9,12 @@ class AddPetModal extends StatefulWidget {
   final int userId;
   final Function(String, String, String, double, String, double, String?, int)
       addPet;
+  final Function loadPets;
 
   const AddPetModal({
     required this.userId,
     required this.addPet,
+    required this.loadPets,
     Key? key,
   }) : super(key: key);
 
@@ -86,6 +88,7 @@ class _AddPetModalState extends State<AddPetModal> {
         _pickedImage!.path,
         widget.userId,
       );
+      widget.loadPets();
     } catch (e) {
       print('Error saving pet: $e');
     }
